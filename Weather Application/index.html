@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Application</title>
+    
+    <!-- Theme script that defaults to light mode -->
+    <script>
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch(e) {
+                // Default to light mode if error
+            }
+        })();
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <!-- MOBILE VERTICAL GRADIENT BACKGROUND + BLACK FORECAST -->
+    <style>
+        @media (max-width: 1023px) {
+            .mobile-gradient-container {
+                background: linear-gradient(to bottom, #3b82f6 0%, #60a5fa 50%, #ffffff 100%);
+            }
+
+            .mobile-gradient-container .mobile-transparent {
+                background: transparent !important;
+            }
+
+            .forecast-black {
+                background-color: black !important;
+                border-radius: 0.75rem;
+                padding: 1rem;
+            }
+
+            .dark .mobile-gradient-container {
+                background: linear-gradient(to bottom, #1e3a8a 0%, #1e40af 50%, #111827 100%);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .mobile-gradient-container {
+                background: none;
+            }
+            
+            .forecast-black {
+                background-color: transparent !important;
+                border-radius: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans transition-colors duration-300">
+    <!-- RESPONSIVE CONTAINER with vertical gradient on mobile -->
+    <div class="flex flex-col lg:flex-row lg:h-screen mobile-gradient-container">
+        
+        <!-- LEFT PANEL - Transparent on mobile to show gradient -->
+        <div class="w-full lg:w-1/3 mobile-transparent lg:bg-gradient-to-br lg:from-blue-400 lg:via-blue-500 lg:to-blue-600 dark:lg:from-gray-800 dark:lg:via-gray-900 dark:lg:to-black text-white p-4 sm:p-6 lg:p-8 flex flex-col relative min-h-screen lg:sticky lg:top-0 lg:h-screen lg:overflow-hidden lg:overflow-y-auto">
+            
+            <!-- Dark Mode Toggle -->
+            <div class="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8 z-10">
+                <button 
+                    id="darkModeToggle"
+                    class="p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors duration-200"
+                    title="Toggle Dark Mode"
+                >
+                    <i id="darkModeIcon" class="fas fa-moon text-sm sm:text-base lg:text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Fixed Container for Desktop, Flexible for Mobile -->
+            <div class="flex flex-col h-full lg:absolute lg:inset-0 lg:flex lg:items-center lg:justify-center lg:p-8">
+                
+                <!-- Content Wrapper -->
+                <div class="flex flex-col items-center text-center lg:transform lg:translate-y-0">
+                    
+                    <!-- WEATHER Header -->
+                    <div class="mb-4 sm:mb-5 lg:mb-6">
+                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-widest opacity-90">WEATHER</h1>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="mb-4 sm:mb-6 lg:mb-8 w-full max-w-sm lg:max-w-xs">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="cityInput"
+                                placeholder="Search for places..."
+                                class="w-full px-3 py-2 sm:px-4 sm:py-3 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm sm:text-base"
+                            >
+                            <button 
+                                id="searchBtn"
+                                class="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white"
+                            >
+                                <i class="fas fa-search text-sm sm:text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weather Icon -->
+                    <div class="mb-4 sm:mb-6 lg:mb-6">
+                        <i id="weatherIcon" class="fas fa-cloud text-6xl sm:text-8xl lg:text-7xl mb-4 sm:mb-6 lg:mb-4 opacity-90 text-gray-300"></i>
+                    </div>
+
+                    <!-- Temperature -->
+                    <div class="mb-4 sm:mb-6 lg:mb-4">
+                        <div id="temperature" class="text-4xl sm:text-5xl lg:text-4xl font-light mb-1 sm:mb-2">29°C</div>
+                        <div id="condition" class="text-base sm:text-lg lg:text-base opacity-90 mb-3 sm:mb-4 lg:mb-2">Partly cloudy</div>
+                    </div>
+
+                    <!-- Date and Location -->
+                    <div class="space-y-1 sm:space-y-2 lg:space-y-1">
+                        <div id="dateTime" class="text-sm sm:text-base lg:text-sm opacity-90">Today • Thu, Jul 31</div>
+                        <div id="location" class="text-sm sm:text-base lg:text-sm opacity-80">
+                            <i class="fas fa-map-marker-alt mr-1 sm:mr-2"></i>Bela Pratapgarh
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Highlights - MOBILE ONLY with blue background and rounded corners -->
+            <div class="lg:hidden mt-6 bg-blue-800 bg-opacity-40 dark:bg-blue-900 dark:bg-opacity-50 rounded-xl p-4">
+                <h2 class="text-lg font-semibold mb-3 text-white">Today's Highlights</h2>
+                <div class="grid grid-cols-1 gap-3" id="mobileHighlights">
+                    <!-- Highlight cards will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Mobile Spacer -->
+            <div class="flex-1 lg:hidden"></div>
+        </div>
+
+        <!-- RIGHT PANEL - Transparent on mobile to show gradient -->
+        <div class="flex-1 mobile-transparent lg:bg-gray-100 dark:lg:bg-gray-900 p-2 sm:p-6 lg:p-8 lg:overflow-y-auto">
+            
+            <!-- Today's Highlights - DESKTOP ONLY -->
+            <div class="hidden lg:block mb-10">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Today's Highlights</h2>
+                <div class="grid grid-cols-3 gap-6" id="desktopHighlights">
+                    <!-- Highlight cards will be generated by JavaScript for desktop -->
+                </div>
+            </div>
+
+            <!-- 5-Day Forecast - BLACK background on mobile, normal on desktop -->
+            <div class="forecast-black">
+                <h2 class="text-xl sm:text-2xl font-semibold mb-1 sm:mb-4 lg:mb-6 text-white lg:text-gray-800 dark:lg:text-white">5-Day Forecast</h2>
+                <div class="space-y-1 sm:space-y-3 lg:space-y-4" id="forecast">
+                    <!-- Forecast cards will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
