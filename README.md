@@ -60,7 +60,6 @@ weather-app/
 weather-app/
 ├── index.html # Main HTML file with Tailwind CSS
 ├── script.js # Weather app JavaScript logic
-└── README.md # Project documentation
 
 ## 🔧 Configuration
 
