@@ -1,6 +1,6 @@
 class WeatherApp {
     constructor() {
-        this.apiKey = '2978e2768d642bda2e1f478b61988389';
+        this.apiKey = 'YOUR_API_KEY';
         this.currentWeatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
         this.forecastUrl = 'https://api.openweathermap.org/data/2.5/forecast';
         this.isGeolocationResult = false;
